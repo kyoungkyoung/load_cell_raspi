@@ -10,48 +10,48 @@ try:
     # Create an object hx which represents your real hx711 chip
     # Required input parameters are only 'dout_pin' and 'pd_sck_pin'
     hx = HX711(dout_pin=6, pd_sck_pin=5)
-    hx2 = HX711(dout_pin=19, pd_sck_pin=13)
+    #hx2 = HX711(dout_pin=19, pd_sck_pin=13)
 
     #print(f'DOUT: {GPIO.input(DOUT_PIN)}')
     
     # measure tare and save the value as offset for current channel
     # and gain selected. That means channel A and gain 128
     print(hx)
-    print(hx2)
+    #print(hx2)
     
     err = hx.zero()
-    err2 = hx2.zero()
+    #err2 = hx2.zero()
 
     print(err)
-    print(err2)
+    #print(err2)
 
 
     # check if successful
-    if err and err2:
+    if err:
         raise ValueError('Tare is unsuccessful.')
 
     reading = hx.get_raw_data_mean()
-    reading2 = hx2.get_raw_data_mean()
+    #reading2 = hx2.get_raw_data_mean()
 
-    if reading and reading2:  # always check if you get correct value or only False
+    if reading:  # always check if you get correct value or only False
         # now the value is close to 0
         print('Data subtracted by offset but still not converted to units:',
               reading)
-        print('Data subtracted by offset but still not converted to units2:',
-              reading2)
+        #print('Data subtracted by offset but still not converted to units2:',
+              #reading2)
     else:
         print('invalid data', reading)
-        print('invalid data2', reading2)
+        #print('invalid data2', reading2)
 
     # In order to calculate the conversion ratio to some units, in my case I want grams,
     # you must have known weight.
     input('Put known weight on the scale and then press Enter')
     reading = hx.get_data_mean()
-    reading2 = hx2.get_data_mean()
+    #reading2 = hx2.get_data_mean()
 
-    if reading and reading2:
+    if reading:
         print('Mean value from HX711 subtracted by offset:', reading)
-        print('Mean value from HX711 subtracted by offset2:', reading2)
+        #print('Mean value from HX711 subtracted by offset2:', reading2)
         known_weight_grams = input(
             'Write how many grams it was and press Enter: ')
         try:
@@ -66,16 +66,16 @@ try:
         # scale ratio. Without arguments 'channel' and 'gain_A' it sets
         # the ratio for current channel and gain.
         ratio = reading / value  # calculate the ratio for channel A and gain 128
-        ratio2 = reading2 / value
+        #ratio2 = reading2 / value
         
         hx.set_scale_ratio(ratio)  # set ratio for current channel
-        hx2.set_scale_ratio(ratio2)
+        #hx2.set_scale_ratio(ratio2)
 
 
         print('Ratio is set.')
     else:
         raise ValueError('Cannot calculate mean value. Try debug mode. Variable reading:', reading)
-        raise ValueError('Cannot calculate mean value. Try debug mode. Variable reading2:', reading2)
+        #raise ValueError('Cannot calculate mean value. Try debug mode. Variable reading2:', reading2)
 
     # Read data several times and return mean value
     # subtracted by offset and converted by scale ratio to
@@ -86,12 +86,12 @@ try:
     
     while True:
         weight = hx.get_weight_mean(30)
-        weight2 = hx2.get_weight_mean(30)
+        #weight2 = hx2.get_weight_mean(30)
 
         print(weight, 'g')
-        print(weight2, 'g')
+        #print(weight2, 'g')
 
-        server_ras.send_data(f"{(weight+weight2)/2}")
+        server_ras.send_data(f"{weight}")
         
         #server_ras.send_weight(weight)
 
